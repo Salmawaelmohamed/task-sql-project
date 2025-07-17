@@ -1,0 +1,100 @@
+-- Users Table
+CREATE TABLE Users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    email TEXT NOT NULL
+);
+
+INSERT INTO Users (username, email) VALUES
+('ahmed', 'ahmed@example.com'),
+('somaia', 'somaia@example.com'),
+('mohmed', 'mohmed@example.com'),
+('mariam', 'mariam@example.com'),
+('rahma', 'rahma@example.com'),
+('abeer', 'abeer@example.com'),
+('zainab', 'zainab@example.com'),
+('kmal', 'kmal@example.com'),
+('ahlam', 'ahlam@example.com'),
+('yasser', 'yasser@example.com');
+
+-- Categories Table
+CREATE TABLE Categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL
+);
+
+INSERT INTO Categories (name) VALUES
+('personal'),
+('study'),
+('read'),
+('home'),
+('learn'),
+('sport'),
+('hobbies'),
+('work'),
+('rest and enjoy'),
+('religion');
+
+-- Tasks Table
+CREATE TABLE Tasks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    title TEXT,
+    description TEXT,
+    status TEXT CHECK(status IN ('pending', 'completed')),
+    due_date TEXT,
+    category_id INTEGER,
+    FOREIGN KEY (user_id) REFERENCES Users(id),
+    FOREIGN KEY (category_id) REFERENCES Categories(id)
+);
+
+INSERT INTO Tasks (user_id, title, description, status, due_date, category_id) VALUES
+(1, 'study math', 'Finish 1 lesson', 'completed', '2025-07-09', 2),
+(2, 'drawing', '', 'pending', '2025-07-10', 7),
+(3, 'play foot ball', 'play 1 hour', 'completed', '2025-07-08', 6),
+(4, 'watch movie', '', 'pending', '2025-07-15', 9),
+(5, 'read a book', 'read 10 pages', 'pending', '2025-07-15', 3),
+(6, 'Washing dishes', '', 'completed', '2025-07-01', 4),
+(7, 'Reading the Qur’an', 'Reading part of the Qur’an', 'pending', '2025-07-17', 10),
+(8, 'take a shower', '', 'completed', '2025-07-07', 1),
+(9, 'learn English', 'take first section', 'completed', '2025-07-19', 5),
+(10, 'finish work tasks', 'finish 5 tasks', 'pending', '2025-07-16', 8),
+(10, 'finish work tasks', '', 'completed', '2025-07-18', 8);
+
+-- Update a user
+UPDATE Users SET username = 'mahmoud' WHERE id = 9;
+UPDATE Users SET email = 'mahmoud@example.com' WHERE username = 'mahmoud';
+
+-- Delete a task
+DELETE FROM Tasks WHERE id = 11;
+
+-- Show all users
+SELECT * FROM Users;
+
+-- Show all tasks
+SELECT * FROM Tasks;
+
+-- Show finished tasks
+SELECT title, status FROM Tasks WHERE LOWER(status) = 'completed';
+
+-- Show pending tasks
+SELECT title, status FROM Tasks WHERE LOWER(status) = 'pending';
+
+-- Update task description
+UPDATE Tasks SET description = 'Draw landscape scene' WHERE id = 2;
+
+-- Show tasks with user and category info
+SELECT 
+  Users.username AS "User Name", 
+  Users.email AS "Email Address", 
+  Tasks.title AS "Task", 
+  CASE 
+    WHEN TRIM(IFNULL(Tasks.description, '')) = '' THEN 'Not found'
+    ELSE Tasks.description
+  END AS "Description",
+  Tasks.status AS "Status", 
+  Tasks.due_date AS "Due Date", 
+  Categories.name AS "Category"
+FROM Users
+LEFT JOIN Tasks ON Users.id = Tasks.user_id
+LEFT JOIN Categories ON Tasks.category_id = Categories.id;
